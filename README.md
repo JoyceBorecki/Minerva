@@ -84,7 +84,7 @@ domínio sobre a solução desenvolvida.
 
 #### **Rubrica - Etapa 1 (Nota Máxima: 40)**
 
-| Critério | Excelente (26-30 pts) | Bom (21-25 pts) | Satisfatório (15-20 pts) | Insuficiente (<15 pts) |
+| Critério | Excelente (31-40 pts) | Bom (21-30 pts) | Satisfatório (15-20 pts) | Insuficiente (<15 pts) |
 | :--- | :--- | :--- | :--- | :--- |
 | **Funcionalidade (10 pts)** | Comprime e descomprime arquivos grandes perfeitamente, com integridade total dos dados. | Funciona para a maioria dos casos, mas pode ter bugs em arquivos muito específicos. | A compressão funciona, mas a descompressão falha ou corrompe dados. | Não funciona ou não foi entregue. |
 | **Gerenciamento de Memória (10 pts)** | Uso de memória é baixo e constante, comprovadamente independente do tamanho do arquivo. | Uso de memória é baixo na maior parte do tempo, mas pode ter picos. | Tenta gerenciar memória, mas ainda carrega porções grandes demais do arquivo. | Carrega o arquivo inteiro na memória. |
@@ -92,7 +92,7 @@ domínio sobre a solução desenvolvida.
 
 #### **Rubrica - Etapa 2 (Nota Máxima: 40)**
 
-| Critério | Excelente (26-30 pts) | Bom (21-25 pts) | Satisfatório (15-20 pts) | Insuficiente (<15 pts) |
+| Critério | Excelente (31-40 pts) | Bom (21-30 pts) | Satisfatório (15-20 pts) | Insuficiente (<15 pts) |
 | :--- | :--- | :--- | :--- | :--- |
 | **Funcionalidade (15 pts)** | Encontra todas as ocorrências, incluindo as que cruzam as fronteiras dos blocos de leitura. | Encontra a maioria das ocorrências, mas falha em alguns casos de fronteira. | Encontra apenas ocorrências que estão inteiramente dentro de um bloco. | Não encontra as ocorrências corretamente. |
 | **Gerenciamento de Memória (5 pts)** | Uso de memória é baixo e constante. | Uso de memória aceitável, mas não otimizado. | - | Carrega o arquivo inteiro na memória. |
@@ -100,7 +100,7 @@ domínio sobre a solução desenvolvida.
 
 #### **Rubrica - Etapa 3 (Nota Máxima: 40)**
 
-| Critério | Excelente (36-40 pts) | Bom (30-35 pts) | Satisfatório (20-29 pts) | Insuficiente (<20 pts) |
+| Critério | Excelente (31-40 pts) | Bom (21-30 pts) | Satisfatório (15-20 pts) | Insuficiente (<15 pts) |
 | :--- | :--- | :--- | :--- | :--- |
 | **Design da Estrutura Indexada (10 pts)** | O formato do arquivo é eficiente, bem documentado e robusto. O índice é compacto. | O formato funciona, mas poderia ser mais otimizado ou está pouco documentado. | O formato é funcionalmente correto, mas ingênuo e/ou ineficiente. | Estrutura mal projetada ou inexistente. |
 | **Funcionalidade da Busca (15 pts)** | Encontra todas as ocorrências no arquivo comprimido, reportando as posições originais corretamente. | Funciona na maioria dos casos, mas pode falhar em casos complexos (ex: múltiplas ocorrências na fronteira). | A busca funciona, mas os offsets reportados estão incorretos ou não trata fronteiras. | A busca não funciona. |
