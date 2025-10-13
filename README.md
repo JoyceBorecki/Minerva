@@ -1,93 +1,107 @@
-# project-02-2025
+### **Especificação de Trabalho Prático: Sistema de Processamento de Arquivos Grandes**
 
+**Objetivo Geral:** Projetar e implementar uma ferramenta de linha de comando
+(CLI) para compressão e busca de substrings em arquivos de texto, com foco no
+processamento de dados que excedem a memória RAM disponível. O projeto visa
+aplicar conceitos de algoritmos, manipulação de arquivos em baixo nível e
+gerenciamento de memória.
 
+**Descrição Geral:** Os estudantes desenvolverão uma aplicação modular que será
+construída em três etapas progressivas. A aplicação final deverá ser capaz de
+compactar um arquivo de texto grande e, posteriormente, realizar buscas por
+substrings diretamente no arquivo compactado, de forma eficiente e sem a
+necessidade de descompressão **total**.
 
-## Getting started
+**Requisitos Gerais (Válidos para todas as etapas):**
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+* **Linguagem de Programação:** Livre, mas todos os recursos utilizados devem
+ser implementados pela equipe.
+* **Interface:** A interação com o programa deve ser via linha de comando (CLI).
+* **Gerenciamento de Memória:** A restrição principal é que nenhuma etapa pode
+carregar o arquivo de entrada inteiro na memória RAM. O uso de memória deve ser
+baixo e constante, independentemente do tamanho do arquivo.
+* **Entrega:** O código-fonte completo, bem documentado, e um breve relatório
+técnico (1-2 páginas) explicando as decisões de projeto para cada etapa
+concluída.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+---
 
-## Add your files
+### **Etapas do Projeto**
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+#### **Etapa 1: Compressão de Arquivos Grandes (Vale até 40 pontos)**
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/ds143-alexkutzke/project-02-2025.git
-git branch -M main
-git push -uf origin main
-```
+**Objetivo:** Implementar a funcionalidade de compressão de um arquivo de texto.
+O algoritmo deve processar o arquivo de entrada garantindo baixo uso de memória.
 
-## Integrate with your tools
+* **Comando:** `meu_programa compactar <arquivo_original> <arquivo_compactado>`
+* **Algoritmo Sugerido:** Implementação do LZW (Lempel-Ziv-Welch) ou Huffman. A
+utilização de bibliotecas prontas para o núcleo do algoritmo de compressão é
+vetada..
 
-- [ ] [Set up project integrations](https://gitlab.com/ds143-alexkutzke/project-02-2025/-/settings/integrations)
+#### **Etapa 2: Busca de Substring em Arquivo Grande (Vale até 40 pontos adicionais)**
 
-## Collaborate with your team
+**Objetivo:** Implementar uma busca por substring em um arquivo de texto
+**original (não comprimido)** que pode ser maior que a memória RAM disponível.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+* **Comando:** `meu_programa buscar_simples <arquivo_original> "<substring>"`
+* **Saída:** A lista de posições (offsets em bytes) onde a substring foi encontrada.
+* **Algoritmo Sugerido:** Knuth-Morris-Pratt (KMP) ou Boyer-Moore.
 
-## Test and Deploy
+#### **Etapa 3: Busca de Substring em Arquivo Comprimido (Vale até 40 pontos adicionais)**
 
-Use the built-in continuous integration in GitLab.
+**Objetivo:** Integrar e evoluir as etapas anteriores para permitir a busca por
+substring diretamente no arquivo gerado pela Etapa 1, sem descompressão total.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+* **Comando:** `meu_programa buscar_compactado <arquivo_compactado> "<substring>"`
+* **Saída:** A lista de posições (offsets em bytes) relativas ao **arquivo original**.
+* **Requisito de Arquitetura:** Para viabilizar esta etapa, o formato do arquivo
+comprimido (criado na Etapa 1) deverá ser modificado. A solução recomendada é a
+**compressão em blocos com um índice**. O arquivo comprimido deve conter uma
+tabela (índice) que mapeia os blocos de dados do arquivo original para suas
+versões comprimidas.
+* **Processo de Busca:**
+    1. Carregar apenas o índice em memória.
+    2. Iterar pelos blocos usando o índice.
+    3. Para cada bloco: ler do disco, descomprimir em memória e realizar a busca.
+    4. Calcular a posição correta no arquivo original e lidar com ocorrências
+       que cruzam as fronteiras dos blocos.
+* **Desafio Principal:** Projetar uma estrutura de arquivo indexada eficiente e
+implementar a lógica de busca que a utilize para descompressão seletiva.
 
-***
+---
 
-# Editing this README
+### **Defesa do Trabalho**
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+Parte da nota de cada etapa será atribuída durante uma defesa presencial. Os
+alunos deverão apresentar o código-fonte funcionando, explicar as escolhas de
+algoritmos e estruturas de dados, e realizar pequenas alterações/correções no
+código em tempo real, conforme solicitado pelo professor, para demonstrar
+domínio sobre a solução desenvolvida.
 
-## Suggestions for a good README
+---
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### **Rubricas de Avaliação**
 
-## Name
-Choose a self-explaining name for your project.
+#### **Rubrica - Etapa 1 (Nota Máxima: 40)**
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+| Critério | Excelente (26-30 pts) | Bom (21-25 pts) | Satisfatório (15-20 pts) | Insuficiente (<15 pts) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Funcionalidade (10 pts)** | Comprime e descomprime arquivos grandes perfeitamente, com integridade total dos dados. | Funciona para a maioria dos casos, mas pode ter bugs em arquivos muito específicos. | A compressão funciona, mas a descompressão falha ou corrompe dados. | Não funciona ou não foi entregue. |
+| **Gerenciamento de Memória (10 pts)** | Uso de memória é baixo e constante, comprovadamente independente do tamanho do arquivo. | Uso de memória é baixo na maior parte do tempo, mas pode ter picos. | Tenta gerenciar memória, mas ainda carrega porções grandes demais do arquivo. | Carrega o arquivo inteiro na memória. |
+| **Defesa Oral e Modificação (10 pts)** | Explica o algoritmo e o código com clareza. Realiza modificações solicitadas rapidamente. | Explica o funcionamento geral, mas tem dificuldade com detalhes. Realiza modificações com ajuda. | Explicação superficial. Não consegue realizar modificações práticas no código. | Não consegue explicar o próprio código. |
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+#### **Rubrica - Etapa 2 (Nota Máxima: 40)**
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+| Critério | Excelente (26-30 pts) | Bom (21-25 pts) | Satisfatório (15-20 pts) | Insuficiente (<15 pts) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Funcionalidade (15 pts)** | Encontra todas as ocorrências, incluindo as que cruzam as fronteiras dos blocos de leitura. | Encontra a maioria das ocorrências, mas falha em alguns casos de fronteira. | Encontra apenas ocorrências que estão inteiramente dentro de um bloco. | Não encontra as ocorrências corretamente. |
+| **Gerenciamento de Memória (5 pts)** | Uso de memória é baixo e constante. | Uso de memória aceitável, mas não otimizado. | - | Carrega o arquivo inteiro na memória. |
+| **Defesa Oral e Modificação (10 pts)** | Explica o algoritmo de busca e a lógica para tratar fronteiras de blocos. Modifica a formatação da saída com facilidade. | Explica o algoritmo, mas a lógica de fronteira é confusa. Modifica a saída com dificuldade. | Explicação genérica do algoritmo de busca, sem abordar o desafio principal. | Não consegue explicar o próprio código. |
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+#### **Rubrica - Etapa 3 (Nota Máxima: 40)**
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+| Critério | Excelente (36-40 pts) | Bom (30-35 pts) | Satisfatório (20-29 pts) | Insuficiente (<20 pts) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Design da Estrutura Indexada (10 pts)** | O formato do arquivo é eficiente, bem documentado e robusto. O índice é compacto. | O formato funciona, mas poderia ser mais otimizado ou está pouco documentado. | O formato é funcionalmente correto, mas ingênuo e/ou ineficiente. | Estrutura mal projetada ou inexistente. |
+| **Funcionalidade da Busca (15 pts)** | Encontra todas as ocorrências no arquivo comprimido, reportando as posições originais corretamente. | Funciona na maioria dos casos, mas pode falhar em casos complexos (ex: múltiplas ocorrências na fronteira). | A busca funciona, mas os offsets reportados estão incorretos ou não trata fronteiras. | A busca não funciona. |
+| **Defesa Oral e Modificação (15 pts)** | Demonstra domínio completo do sistema integrado. Justifica as decisões de design do índice e é capaz de debater trade-offs. Realiza alterações complexas na lógica de busca. | Explica bem o sistema, mas não consegue justificar profundamente as escolhas de design. Realiza alterações com ajuda. | Explicação superficial. Consegue apenas descrever o que o código faz, sem explicar o "porquê". | Não demonstra ter autoria sobre o projeto. |
