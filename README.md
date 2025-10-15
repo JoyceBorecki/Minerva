@@ -24,6 +24,7 @@ baixo e constante, independentemente do tamanho do arquivo.
 técnico (em formato Markdown no README do projeto) explicando as decisões de projeto para cada etapa
 concluída. A entrega deve ser realizada através de um fork deste projeto no gitlab.
 * Número de integrantes: No mínimo 3 integrantes.
+* Uso de IA: O uso de IA generativa é permitido no trabalho. Porém, este uso deve ser relatado no arquivo `AI_USAGE_LOG.md` seguindo as regras lá contidas. O preenchimento deste arquivo será contabilizado na nota de defesa e documentação.
 
 ---
 
