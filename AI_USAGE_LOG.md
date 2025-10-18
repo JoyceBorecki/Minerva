@@ -23,3 +23,27 @@
   A leitura em blocos está implementada nas funções compactar_arquivo_em_blocos() e descompactar_arquivo_em_blocos() no arquivo compressor_lzw.py.
   
 ---
+
+### Interação 2
+
+- **Data:** 18/10/2025
+- **Etapa do Projeto:** 1 - Compressão de Arquivos
+- **Ferramenta de IA Utilizada:** ChatGPT
+- **Objetivo da Consulta:** Entender por que arquivos muito pequenos podem ficar maiores após a compressão com LZW.
+
+- **Prompt(s) Utilizado(s):**
+  1. "Por que o arquivo ABRACADABRA! ficou maior depois de compactar?"
+  2. "É normal a taxa de compressão ser negativa em arquivos pequenos?"
+
+- **Resumo da Resposta da IA:**
+  A IA explicou que isso é normal em algoritmos como LZW e Huffman quando o arquivo é muito pequeno. No caso do arquivo teste2.txt, ABRACADABRA! (12 caracteres, 96 bits), a versão compactada acabou com 256 bits. Acontece porque o algoritmo precisa criar um dicionário e representar as sequências com códigos numéricos, e essa estrutura tem um custo extra que só compensa quando o arquivo é maior.
+  Arquivos pequenos: têm pouca repetição e não trazem vantagem para a compressão, às vezes ficando até maiores.
+  Arquivos grandes e repetitivos: a compressão funciona melhor, pois o dicionário aproveita os padrões e o tamanho total diminui.
+
+- **Análise e Aplicação:**
+  Esse teste com ABRACADABRA! ajudou a entender que o LZW não é vantajoso para arquivos muito pequenos. Eles podem até aumentar de tamanho, e isso é esperado. Já em arquivos maiores e com padrões repetidos (teste.txt (~80 KB)) a compressão reduziu o tamanho em cerca de 25%.
+
+- **Referência no Código:**
+  A comparação entre tamanho original e compactado é feita pela função analisar_compressao() no arquivo compressor_lzw.py.
+
+---

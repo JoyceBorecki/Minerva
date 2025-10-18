@@ -1,3 +1,5 @@
+import os
+
 def compactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: int = 4096) -> None:
     dicionario = {chr(i): i for i in range(256)}
     proximo_codigo = 256
@@ -21,6 +23,8 @@ def compactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: i
 
         if sequencia_atual:
             saida.write(str(dicionario[sequencia_atual]) + " ")
+
+    analisar_compressao(caminho_entrada, caminho_saida)
 
     print(f"Arquivo '{caminho_entrada}' compactado com sucesso para '{caminho_saida}'.")
 
@@ -66,3 +70,12 @@ def descompactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco
                 sequencia_anterior = entrada
 
     print(f"Arquivo '{caminho_entrada}' descompactado com sucesso em '{caminho_saida}'.")
+
+
+def analisar_compressao(arquivo_original: str, arquivo_compactado: str):
+    tamanho_original = os.path.getsize(arquivo_original) * 8
+    tamanho_compactado = os.path.getsize(arquivo_compactado) * 8
+    taxa = 100 - (tamanho_compactado / tamanho_original * 100)
+    print(f"- Tamanho original: {tamanho_original} bits")
+    print(f"- Tamanho compactado: {tamanho_compactado} bits")
+    print(f"- Redução: {taxa:.2f}%\n")
