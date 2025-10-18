@@ -1,8 +1,8 @@
 import sys
-from compressor_lzw import compactar_arquivo_em_blocos, descompactar_arquivo_em_blocos
+from compressor_lzw import compactar_arquivo, descompactar_arquivo
 
-# python compressor_lzw/interface_cli.py compactar seu_arquivo.txt seu_arquivo.lzw
-# python compressor_lzw/interface_cli.py descompactar seu_arquivo.lzw arquivo_reconstruido.txt
+# python compressor_lzw/interface_cli.py compactar arquivos_teste/entrada/teste.txt arquivos_teste/compactados/teste.lzw
+# python compressor_lzw/interface_cli.py descompactar arquivos_teste/compactados/teste.lzw arquivos_teste/descompactados/reconstruido.txt
 
 def main():
     if len(sys.argv) != 4:
@@ -14,9 +14,9 @@ def main():
 
     try:
         if comando == "compactar":
-            compactar_arquivo_em_blocos(entrada, saida)
+            compactar_arquivo(entrada, saida)
         elif comando == "descompactar":
-            descompactar_arquivo_em_blocos(entrada, saida)
+            descompactar_arquivo(entrada, saida)
         else:
             print("Comando inválido. Use: compactar | descompactar")
     except Exception as e:
