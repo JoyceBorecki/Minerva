@@ -1,55 +1,25 @@
-# Relatório de Uso de Inteligência Artificial Generativa
-
-Este documento registra todas as interações significativas com ferramentas de IA generativa (como Gemini, ChatGPT, Copilot, etc.) durante o desenvolvimento deste projeto. O objetivo é promover o uso ético e transparente da IA como ferramenta de apoio, e não como substituta para a compreensão dos conceitos fundamentais.
-
-## Política de Uso
-O uso de IA foi permitido para as seguintes finalidades:
-- Geração de ideias e brainstorming de algoritmos.
-- Explicação de conceitos complexos.
-- Geração de código boilerplate (ex: estrutura de classes, leitura de arquivos).
-- Sugestões de refatoração e otimização de código.
-- Debugging e identificação de causas de erros.
-- Geração de casos de teste.
-
-É proibido submeter código gerado por IA sem compreendê-lo completamente e sem adaptá-lo ao projeto. Todo trecho de código influenciado pela IA deve ser referenciado neste log.
-
----
-
-## Registro de Interações
-
-*Copie e preencha o template abaixo para cada interação relevante.*
-
 ### Interação 1
 
-- **Data:** 20/10/2025
+- **Data:** 18/10/2025
 - **Etapa do Projeto:** 1 - Compressão de Arquivos
-- **Ferramenta de IA Utilizada:** Gemini Advanced
-- **Objetivo da Consulta:** Eu estava com dificuldades para entender como gerenciar o dicionário do algoritmo LZW quando ele atinge o tamanho máximo. Precisava de uma estratégia para lidar com isso.
+- **Ferramenta de IA Utilizada:** ChatGPT
+- **Objetivo da Consulta:** Eu queria entender por que usamos 4096 bytes (4 KB) como tamanho de bloco ao ler arquivos grandes e o que muda se eu aumentar ou diminuir esse valor.
 
 - **Prompt(s) Utilizado(s):**
-  1. "No algoritmo de compressão LZW, o que acontece quando o dicionário atinge o tamanho máximo? Quais são as estratégias mais comuns para lidar com isso?"
-  2. "Pode me dar um exemplo em Python de como implementar a estratégia de 'resetar o dicionário' no LZW?"
+  1. "Por que ler 4 KB e não mais e não menos?"
+  2. "Cada bloco deve ser dividido em 4 KB mesmo que o arquivo tenha 1 GB?"
+  3. "O que aconteceria se eu aumentasse ou diminuísse o tamanho do bloco?"
 
 - **Resumo da Resposta da IA:**
-  A IA explicou três estratégias: 1) parar de adicionar novas entradas, 2) resetar o dicionário para o estado inicial, e 3) usar uma política de descarte, como LRU (Least Recently Used), que é mais complexa. A IA forneceu um pseudocódigo para a estratégia de reset, que parecia a mais simples e eficaz para este projeto.
+  A IA explicou que 4 KB é o tamanho de página padrão da memória RAM na maioria dos sistemas operacionais, por isso essa escolha costuma ser mais eficiente. Em vez de carregar o arquivo inteiro na memória, o programa lê e processa o conteúdo em blocos de 4 KB, mantendo o uso de memória constante mesmo em arquivos muito grandes. Por exemplo, um arquivo de 1 GB será dividido automaticamente em cerca de 250 mil blocos de 4 KB, processados um de cada vez.
+  Se eu aumentar o tamanho do bloco (por exemplo, para 8 KB ou 16 KB), o programa fará menos leituras e pode ficar um pouco mais rápido, mas vai usar mais memória temporária.
+  Se eu diminuir (por exemplo, para 1 KB), o consumo de memória será ainda menor, mas o número de leituras aumenta e a compressão pode ficar mais lenta.
+  Por isso, 4 KB costuma ser um bom equilíbrio entre desempenho e uso de memória.
 
 - **Análise e Aplicação:**
-  A resposta da IA foi extremamente útil para clarear as opções. Optei por implementar a estratégia de resetar o dicionário. O código fornecido pela IA não foi usado diretamente, pois estava muito simplificado e não se encaixava na minha arquitetura de classes. No entanto, a lógica de verificar o tamanho do dicionário e invocar uma função `reset_dictionary()` foi a base para a minha implementação. Isso me poupou tempo de pesquisa em artigos e livros.
+  Essa explicação me ajudou a entender a relação entre tamanho do bloco, velocidade e consumo de memória. Mantive 4 KB como valor padrão (tamanho_bloco=4096) no código, pois é a opção mais equilibrada para a maioria dos casos. Agora também sei que posso mudar esse valor: usar blocos maiores em máquinas com bastante memória ou blocos menores em máquinas com pouca RAM.
 
 - **Referência no Código:**
-  A lógica inspirada por esta interação foi implementada no arquivo `compressor/lzw.py`, especificamente na função `compress()`, por volta da linha 85.
-
----
-
-### Interação 2
-
-- **Data:** ...
-- **Etapa do Projeto:** ...
-- **Ferramenta de IA Utilizada:** ...
-- **Objetivo da Consulta:** ...
-- **Prompt(s) Utilizado(s):** ...
-- **Resumo da Resposta da IA:** ...
-- **Análise e Aplicação:** ...
-- **Referência no Código:** ...
-
+  A leitura em blocos está implementada nas funções compactar_arquivo_em_blocos() e descompactar_arquivo_em_blocos() no arquivo compressor_lzw.py.
+  
 ---
