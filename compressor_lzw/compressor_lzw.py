@@ -1,25 +1,25 @@
 import os
 
 def compactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: int = 4096) -> None:
-    dicionario = {chr(i): i for i in range(256)}
+    dicionario = {bytes([i]): i for i in range(256)}
     proximo_codigo = 256
-    sequencia_atual = ""
+    sequencia_atual = b""
 
-    with open(caminho_entrada, "r", encoding="utf-8") as arquivo, open(caminho_saida, "w", encoding="utf-8") as saida:
+    with open(caminho_entrada, "rb") as arquivo, open(caminho_saida, "w", encoding="utf-8") as saida:
         while True:
             bloco = arquivo.read(tamanho_bloco)
             if not bloco:
                 break
 
-            for caractere in bloco:
-                nova_sequencia = sequencia_atual + caractere
+            for byte in bloco:
+                nova_sequencia = sequencia_atual + bytes([byte])
                 if nova_sequencia in dicionario:
                     sequencia_atual = nova_sequencia
                 else:
                     saida.write(str(dicionario[sequencia_atual]) + " ")
                     dicionario[nova_sequencia] = proximo_codigo
                     proximo_codigo += 1
-                    sequencia_atual = caractere
+                    sequencia_atual = bytes([byte])
 
         if sequencia_atual:
             saida.write(str(dicionario[sequencia_atual]) + " ")
@@ -29,13 +29,12 @@ def compactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: i
     print(f"Arquivo '{caminho_entrada}' compactado com sucesso para '{caminho_saida}'.")
 
 def descompactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: int = 4096) -> None:
-    dicionario = {i: chr(i) for i in range(256)}
+    dicionario = {i: bytes([i]) for i in range(256)}
     proximo_codigo = 256
     sequencia_anterior = None
-
     buffer = ""
 
-    with open(caminho_entrada, "r", encoding="utf-8") as arquivo, open(caminho_saida, "w", encoding="utf-8") as saida:
+    with open(caminho_entrada, "r", encoding="utf-8") as arquivo, open(caminho_saida, "wb") as saida:
         while True:
             bloco = arquivo.read(tamanho_bloco)
             if not bloco:
@@ -57,14 +56,14 @@ def descompactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco
                 elif codigo in dicionario:
                     entrada = dicionario[codigo]
                 elif codigo == proximo_codigo:
-                    entrada = sequencia_anterior + sequencia_anterior[0]
+                    entrada = sequencia_anterior + sequencia_anterior[:1]
                 else:
                     raise ValueError("Código inválido encontrado durante a descompressão.")
 
                 saida.write(entrada)
 
                 if sequencia_anterior is not None:
-                    dicionario[proximo_codigo] = sequencia_anterior + entrada[0]
+                    dicionario[proximo_codigo] = sequencia_anterior + entrada[:1]
                     proximo_codigo += 1
 
                 sequencia_anterior = entrada
