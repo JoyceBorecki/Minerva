@@ -47,3 +47,52 @@
   A comparação entre tamanho original e compactado é feita pela função analisar_compressao() no arquivo compressor_lzw.py.
 
 ---
+
+### Interação 3
+
+- **Data:** 19/10/2025  
+- **Etapa do Projeto:** 1 - Compressão de Arquivos  
+- **Ferramenta de IA Utilizada:** ChatGPT  
+- **Objetivo da Consulta:** Verificar o comportamento real da compressão em um arquivo grande e identificar problemas no código original.
+
+- **Contexto:**
+Para testar o algoritmo em um cenário mais realista, decidi usar um arquivo de texto extenso: o livro **"Quincas Borba"** de Machado de Assis, disponível em domínio público.  
+Baixei o texto em formato **Plain Text UTF-8 (~481 KB)** e salvei como `livro.txt` dentro da pasta `arquivos_teste/entrada`.
+Depois disso, rodei o programa duas vezes: primeiro com a **versão original do código**, e depois com a **versão corrigida sugerida pela IA**, para comparar os resultados e entender o que estava acontecendo.
+
+- **Prompt(s) Utilizado:**
+1. "O código parece estar funcionando, mas a taxa de compressão está negativa mesmo em arquivos grandes. Pode estar errado?"  
+2. "Como posso melhorar a forma como os códigos são salvos para reduzir o tamanho do arquivo compactado?"  
+3. "Pode revisar a lógica e explicar por que a memória não muda?"
+
+- **Resumo da Resposta da IA:**
+A IA apontou que a versão original do código tinha dois problemas:
+
+- Os códigos estavam sendo gravados como **texto decimal separado por espaços**, o que aumentava muito o tamanho final do arquivo e impedia que a compressão funcionasse de verdade.  
+- O dicionário crescia indefinidamente, sem um limite, o que podia aumentar o consumo de memória e gerar códigos cada vez maiores.
+
+Para resolver, foram sugeridas três mudanças importantes:
+
+1. Gravar os códigos em **formato binário com tamanho fixo de 2 bytes**, reduzindo drasticamente o tamanho do arquivo compactado.  
+2. **Limitar o dicionário a 4096 entradas**, garantindo que o uso de memória fique constante.  
+3. Continuar a leitura em **blocos de 4 KB**, o que mantém o desempenho mesmo em arquivos grandes.
+
+- **Resultado do teste com `livro.txt`:**
+O print mostra os resultados ao executar os dois códigos com o mesmo arquivo:
+
+![Resultados](arquivos_teste/imagens/img_ref.PNG)
+
+O primeiro resultado (acima) é da versão **original**, que teve taxa de compressão **-15,61%**, ou seja, o arquivo compactado ficou ainda maior que o original.  
+O segundo resultado (abaixo) é da versão **corrigida sugerida pela IA**, que reduziu o tamanho em cerca de **33,56%**, gerando um arquivo final com **327.456 bytes**, provando que a compressão passou a funcionar corretamente.
+
+- **Análise e Aplicação:**
+Esse teste foi importante para perceber que o problema não estava no algoritmo LZW em si, mas **na forma como ele estava sendo implementado**.  
+Mesmo com um arquivo grande e repetitivo, a compressão ficava negativa porque os códigos eram gravados como texto e o dicionário não tinha limite.
+Com as correções aplicadas, a compressão passou a gerar ganho real, e o uso de memória se manteve constante.  
+Esse experimento também confirmou, na prática, o que já havia sido discutido na **Interação 1**: ler o arquivo em blocos de 4 KB permite processar arquivos grandes sem sobrecarregar a memória.
+
+- **Referência no Código:**
+As melhorias foram implementadas nas funções `compactar_arquivo()` e `descompactar_arquivo()` do arquivo `compressor_lzw.py`.  
+A função `analisar_compressao()` continua responsável por calcular a taxa de compressão e comparar os tamanhos original e compactado.
+
+---

@@ -1,11 +1,13 @@
 import os
 
+LIMITE = 4096
+
 def compactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: int = 4096) -> None:
     dicionario = {bytes([i]): i for i in range(256)}
     proximo_codigo = 256
     sequencia_atual = b""
 
-    with open(caminho_entrada, "rb") as arquivo, open(caminho_saida, "w", encoding="utf-8") as saida:
+    with open(caminho_entrada, "rb") as arquivo, open(caminho_saida, "wb") as saida:
         while True:
             bloco = arquivo.read(tamanho_bloco)
             if not bloco:
@@ -16,40 +18,37 @@ def compactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: i
                 if nova_sequencia in dicionario:
                     sequencia_atual = nova_sequencia
                 else:
-                    saida.write(str(dicionario[sequencia_atual]) + " ")
-                    dicionario[nova_sequencia] = proximo_codigo
-                    proximo_codigo += 1
+                    if sequencia_atual:
+                        saida.write(dicionario[sequencia_atual].to_bytes(2, byteorder="big"))
+                    if proximo_codigo < LIMITE:
+                        dicionario[nova_sequencia] = proximo_codigo
+                        proximo_codigo += 1
                     sequencia_atual = bytes([byte])
 
         if sequencia_atual:
-            saida.write(str(dicionario[sequencia_atual]) + " ")
+            saida.write(dicionario[sequencia_atual].to_bytes(2, byteorder="big"))
 
     analisar_compressao(caminho_entrada, caminho_saida)
-
     print(f"Arquivo '{caminho_entrada}' compactado com sucesso para '{caminho_saida}'.")
 
 def descompactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: int = 4096) -> None:
     dicionario = {i: bytes([i]) for i in range(256)}
     proximo_codigo = 256
     sequencia_anterior = None
-    buffer = ""
+    buffer = b""
 
-    with open(caminho_entrada, "r", encoding="utf-8") as arquivo, open(caminho_saida, "wb") as saida:
+    with open(caminho_entrada, "rb") as arquivo, open(caminho_saida, "wb") as saida:
         while True:
             bloco = arquivo.read(tamanho_bloco)
-            if not bloco:
+            if not bloco and len(buffer) < 2:
                 break
 
             buffer += bloco
-            codigos = buffer.split()
-
-            if bloco and not bloco.endswith(" "):
-                buffer = codigos.pop()
-            else:
-                buffer = ""
-
-            for codigo_str in codigos:
-                codigo = int(codigo_str)
+            ate = len(buffer) - (len(buffer) % 2)
+            i = 0
+            while i < ate:
+                codigo = int.from_bytes(buffer[i:i+2], byteorder="big")
+                i += 2
 
                 if sequencia_anterior is None:
                     entrada = dicionario[codigo]
@@ -62,19 +61,24 @@ def descompactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco
 
                 saida.write(entrada)
 
-                if sequencia_anterior is not None:
+                if sequencia_anterior is not None and proximo_codigo < LIMITE:
                     dicionario[proximo_codigo] = sequencia_anterior + entrada[:1]
                     proximo_codigo += 1
 
                 sequencia_anterior = entrada
 
+            buffer = buffer[ate:]
+
     print(f"Arquivo '{caminho_entrada}' descompactado com sucesso em '{caminho_saida}'.")
 
 
 def analisar_compressao(arquivo_original: str, arquivo_compactado: str):
-    tamanho_original = os.path.getsize(arquivo_original) * 8
-    tamanho_compactado = os.path.getsize(arquivo_compactado) * 8
+    tamanho_original = os.path.getsize(arquivo_original)
+    tamanho_compactado = os.path.getsize(arquivo_compactado)
+    if tamanho_original == 0:
+        print("- Arquivo vazio (0 bytes)")
+        return
     taxa = 100 - (tamanho_compactado / tamanho_original * 100)
-    print(f"- Tamanho original: {tamanho_original} bits")
-    print(f"- Tamanho compactado: {tamanho_compactado} bits")
+    print(f"- Tamanho original: {tamanho_original} bytes")
+    print(f"- Tamanho compactado: {tamanho_compactado} bytes")
     print(f"- Redução: {taxa:.2f}%\n")

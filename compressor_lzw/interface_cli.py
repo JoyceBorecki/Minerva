@@ -1,8 +1,6 @@
 import sys
+import psutil
 from compressor_lzw import compactar_arquivo, descompactar_arquivo
-
-# python compressor_lzw/interface_cli.py compactar arquivos_teste/entrada/teste.txt arquivos_teste/compactados/teste.lzw
-# python compressor_lzw/interface_cli.py descompactar arquivos_teste/compactados/teste.lzw arquivos_teste/descompactados/reconstruido.txt
 
 def main():
     if len(sys.argv) != 4:
@@ -11,6 +9,7 @@ def main():
         return
 
     comando, entrada, saida = sys.argv[1], sys.argv[2], sys.argv[3]
+    processo = psutil.Process()
 
     try:
         if comando == "compactar":
@@ -19,6 +18,11 @@ def main():
             descompactar_arquivo(entrada, saida)
         else:
             print("Comando inválido. Use: compactar | descompactar")
+            return
+
+        memoria_mb = processo.memory_info().rss / (1024 * 1024)
+        print(f"Memória usada: {memoria_mb:.2f} MB")
+
     except Exception as e:
         print("Erro:", e)
 
