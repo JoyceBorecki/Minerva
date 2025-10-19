@@ -1,4 +1,5 @@
 import os
+import hashlib
 
 LIMITE = 4096
 
@@ -71,6 +72,12 @@ def descompactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco
 
     print(f"Arquivo '{caminho_entrada}' descompactado com sucesso em '{caminho_saida}'.")
 
+def calcular_hash(caminho_arquivo):
+    sha256 = hashlib.sha256()
+    with open(caminho_arquivo, "rb") as f:
+        for bloco in iter(lambda: f.read(4096), b""):
+            sha256.update(bloco)
+    return sha256.hexdigest()
 
 def analisar_compressao(arquivo_original: str, arquivo_compactado: str):
     tamanho_original = os.path.getsize(arquivo_original)
