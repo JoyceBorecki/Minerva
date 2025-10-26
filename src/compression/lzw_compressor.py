@@ -1,7 +1,7 @@
+from src.utils.file_utils import analisar_compressao
 import os
-import hashlib
 
-LIMITE = 4096
+LIMITE_DICIONARIO = 4096
 
 def compactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: int = 4096) -> None:
     dicionario = {bytes([i]): i for i in range(256)}
@@ -21,7 +21,7 @@ def compactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: i
                 else:
                     if sequencia_atual:
                         saida.write(dicionario[sequencia_atual].to_bytes(2, byteorder="big"))
-                    if proximo_codigo < LIMITE:
+                    if proximo_codigo < LIMITE_DICIONARIO:
                         dicionario[nova_sequencia] = proximo_codigo
                         proximo_codigo += 1
                     sequencia_atual = bytes([byte])
@@ -45,9 +45,9 @@ def descompactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco
                 break
 
             buffer += bloco
-            ate = len(buffer) - (len(buffer) % 2)
+            limite_leitura = len(buffer) - (len(buffer) % 2)
             i = 0
-            while i < ate:
+            while i < limite_leitura:
                 codigo = int.from_bytes(buffer[i:i+2], byteorder="big")
                 i += 2
 
@@ -62,30 +62,12 @@ def descompactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco
 
                 saida.write(entrada)
 
-                if sequencia_anterior is not None and proximo_codigo < LIMITE:
+                if sequencia_anterior is not None and proximo_codigo < LIMITE_DICIONARIO:
                     dicionario[proximo_codigo] = sequencia_anterior + entrada[:1]
                     proximo_codigo += 1
 
                 sequencia_anterior = entrada
 
-            buffer = buffer[ate:]
+            buffer = buffer[limite_leitura:]
 
     print(f"Arquivo '{caminho_entrada}' descompactado com sucesso em '{caminho_saida}'.")
-
-def calcular_hash(caminho_arquivo):
-    sha256 = hashlib.sha256()
-    with open(caminho_arquivo, "rb") as f:
-        for bloco in iter(lambda: f.read(4096), b""):
-            sha256.update(bloco)
-    return sha256.hexdigest()
-
-def analisar_compressao(arquivo_original: str, arquivo_compactado: str):
-    tamanho_original = os.path.getsize(arquivo_original)
-    tamanho_compactado = os.path.getsize(arquivo_compactado)
-    if tamanho_original == 0:
-        print("- Arquivo vazio (0 bytes)")
-        return
-    taxa = 100 - (tamanho_compactado / tamanho_original * 100)
-    print(f"- Tamanho original: {tamanho_original} bytes")
-    print(f"- Tamanho compactado: {tamanho_compactado} bytes")
-    print(f"- Redução: {taxa:.2f}%\n")

@@ -80,7 +80,7 @@ Para resolver, foram sugeridas três mudanças importantes:
 - **Resultado do teste com `livro.txt`:**
 O print mostra os resultados ao executar os dois códigos com o mesmo arquivo:
 
-![Resultados](arquivos_teste/imagens/img_ref.PNG)
+![Resultados](data/exemplos/img_ref.PNG)
 
 O primeiro resultado (acima) é da versão **original**, que teve taxa de compressão **-15,61%**, ou seja, o arquivo compactado ficou ainda maior que o original.  
 O segundo resultado (abaixo) é da versão **corrigida sugerida pela IA**, que reduziu o tamanho em cerca de **33,56%**, gerando um arquivo final com **327.456 bytes**, provando que a compressão passou a funcionar corretamente.

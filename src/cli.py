@@ -1,9 +1,10 @@
 import sys
-import psutil
 import os
-from compressor_lzw import compactar_arquivo, descompactar_arquivo, calcular_hash
+from src.compression.lzw_compressor import compactar_arquivo, descompactar_arquivo
+from src.utils.file_utils import calcular_hash
+from src.utils.memory_utils import get_memory_usage_mb
 
-BASE_DIR = "arquivos_teste"
+BASE_DIR = "data"
 ENTRADA_DIR = os.path.join(BASE_DIR, "entrada")
 COMPACTADOS_DIR = os.path.join(BASE_DIR, "compactados")
 DESCOMPACTADOS_DIR = os.path.join(BASE_DIR, "descompactados")
@@ -11,12 +12,11 @@ DESCOMPACTADOS_DIR = os.path.join(BASE_DIR, "descompactados")
 def main():
     if len(sys.argv) != 3:
         print("Uso:")
-        print("  python compressor_lzw/interface_cli.py compactar <arquivo.txt>")
-        print("  python compressor_lzw/interface_cli.py descompactar <arquivo.lzw>")
+        print("  python src/cli.py compactar <arquivo.txt>")
+        print("  python src/cli.py descompactar <arquivo.lzw>")
         return
 
     comando, nome_arquivo = sys.argv[1], sys.argv[2]
-    processo = psutil.Process()
 
     try:
         if comando == "compactar":
@@ -42,7 +42,7 @@ def main():
             print("Comando inválido. Use: compactar | descompactar")
             return
 
-        memoria_mb = processo.memory_info().rss / (1024 * 1024)
+        memoria_mb = get_memory_usage_mb()
         print(f"Memória usada: {memoria_mb:.2f} MB")
 
     except Exception as e:
