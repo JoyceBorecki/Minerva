@@ -1,4 +1,4 @@
-from src.utils.file_utils import analisar_compressao
+from src.util.arquivos import analisar_compressao
 import os
 
 LIMITE_DICIONARIO = 4096
@@ -31,6 +31,7 @@ def compactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: i
 
     analisar_compressao(caminho_entrada, caminho_saida)
     print(f"Arquivo '{caminho_entrada}' compactado com sucesso para '{caminho_saida}'.")
+
 
 def descompactar_arquivo(caminho_entrada: str, caminho_saida: str, tamanho_bloco: int = 4096) -> None:
     dicionario = {i: bytes([i]) for i in range(256)}

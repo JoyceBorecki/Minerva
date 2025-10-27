@@ -1,8 +1,8 @@
 import sys
 import os
-from src.compression.lzw_compressor import compactar_arquivo, descompactar_arquivo
-from src.utils.file_utils import calcular_hash
-from src.utils.memory_utils import get_memory_usage_mb
+from src.compactacao.lzw import compactar_arquivo, descompactar_arquivo
+from src.util.arquivos import calcular_hash
+from src.util.memoria import get_memory_usage_mb
 
 BASE_DIR = "data"
 ENTRADA_DIR = os.path.join(BASE_DIR, "entrada")
