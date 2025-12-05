@@ -36,6 +36,21 @@ python run.py buscar_simples <arquivo.txt> "<substring>"
 - Exibe os offsets em bytes das ocorrências encontradas.
 - Mantém uso de memória constante, independentemente do tamanho do arquivo.
 
+## Busca no Arquivo Compactado (KMP + LZW por blocos)
+
+A etapa 3 integra as anteriores, permitindo buscar substrings **diretamente** no arquivo compactado. O arquivo passa a ser organizado em blocos e acompanhado de um índice, o que permite acessar apenas as partes necessárias.
+Durante a busca, o programa lê apenas o índice e descompacta cada bloco individualmente, aplicando o algoritmo KMP de forma contínua. Assim, a busca permanece eficiente e encontra ocorrências mesmo quando a substring atravessa dois blocos diferentes.
+
+**Comando:**
+```bash
+python run.py buscar_compactado <arquivo.lzw> "<substring>"
+```
+
+**Características:**
+- Permite busca diretamente no arquivo compactado, sem descompactação total.
+- Carrega apenas o índice e um bloco por vez na memória.
+- Mantém uso de memória baixo e constante, independentemente do tamanho do arquivo.
+
 ## Uso de Inteligência Artificial
 
 Ferramentas de IA generativa foram utilizadas apenas como apoio na estruturação de código, revisão de lógica e formatação do relatório. Todas as interações foram registradas no arquivo `AI_USAGE_LOG.md`.
