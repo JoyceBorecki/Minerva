@@ -1,7 +1,8 @@
 import sys
 import os
-from src.compactacao.lzw import compactar_arquivo, descompactar_arquivo
-from src.busca.kmp import buscar_substring, iter_busca_kmp
+
+from src.compactacao.lzw import compactar_arquivo, descompactar_arquivo, buscar_substring_compactado
+from src.busca.kmp import iter_busca_kmp
 from src.util.arquivos import calcular_hash
 from src.util.memoria import get_memory_usage_mb
 
@@ -16,9 +17,11 @@ def main():
         print("  python src/cli.py compactar <arquivo.txt>")
         print("  python src/cli.py descompactar <arquivo.lzw>")
         print('  python src/cli.py buscar_simples <arquivo.txt> "<substring>"')
+        print('  python src/cli.py buscar_compactado <arquivo.lzw> "<substring>"')
         return
 
-    comando, nome_arquivo = sys.argv[1], sys.argv[2]
+    comando = sys.argv[1]
+    nome_arquivo = sys.argv[2]
 
     try:
         if comando == "compactar":
@@ -31,14 +34,12 @@ def main():
             caminho_saida = os.path.join(DESCOMPACTADOS_DIR, nome_arquivo.replace(".lzw", "_descompactado.txt"))
             descompactar_arquivo(caminho_entrada, caminho_saida)
 
-            original_path = os.path.join(ENTRADA_DIR, nome_arquivo.replace(".lzw", ".txt"))
-            if os.path.exists(original_path):
-                hash_original = calcular_hash(original_path)
-                hash_resultado = calcular_hash(caminho_saida)
-                if hash_original == hash_resultado:
+            original = os.path.join(ENTRADA_DIR, nome_arquivo.replace(".lzw", ".txt"))
+            if os.path.exists(original):
+                if calcular_hash(original) == calcular_hash(caminho_saida):
                     print("Arquivo descompactado é idêntico ao original.")
                 else:
-                    print("Arquivo descompactado é diferente do original!")
+                    print("Arquivo descompactado é diferente do original.")
 
         elif comando == "buscar_simples":
             if len(sys.argv) < 4:
@@ -46,27 +47,37 @@ def main():
                 return
 
             substring = sys.argv[3]
+            caminho = nome_arquivo if os.path.isabs(nome_arquivo) else os.path.join(ENTRADA_DIR, nome_arquivo)
 
-            if os.path.isabs(nome_arquivo):
-                caminho_entrada = nome_arquivo
-            else:
-                caminho_entrada = os.path.join(ENTRADA_DIR, nome_arquivo)
-
-            if not os.path.exists(caminho_entrada):
-                print(f"Arquivo '{nome_arquivo}' não encontrado em '{ENTRADA_DIR}'.")
+            if not os.path.exists(caminho):
+                print(f"Arquivo '{nome_arquivo}' não encontrado.")
                 return
 
-            padrao_bytes = substring.encode("utf-8")
-            offsets_iter = iter_busca_kmp(caminho_entrada, padrao_bytes, tamanho_bloco=8 << 20)
-            print(" ".join(map(str, offsets_iter)))
+            offsets = iter_busca_kmp(caminho, substring.encode())
+            print(" ".join(map(str, offsets)))
+            return
+
+        elif comando == "buscar_compactado":
+            if len(sys.argv) < 4:
+                print('Uso: python src/cli.py buscar_compactado <arquivo.lzw> "<substring>"')
+                return
+
+            substring = sys.argv[3]
+            caminho = nome_arquivo if os.path.isabs(nome_arquivo) else os.path.join(COMPACTADOS_DIR, nome_arquivo)
+
+            if not os.path.exists(caminho):
+                print(f"Arquivo '{nome_arquivo}' não encontrado.")
+                return
+
+            offsets = buscar_substring_compactado(caminho, substring)
+            print(" ".join(map(str, offsets)))
             return
 
         else:
-            print("Comando inválido. Use: compactar | descompactar | buscar_simples")
+            print("Comando inválido.")
             return
 
-        memoria_mb = get_memory_usage_mb()
-        print(f"Memória usada: {memoria_mb:.2f} MB")
+        print(f"Memória usada: {get_memory_usage_mb():.2f} MB")
 
     except Exception as e:
         print("Erro:", e)
