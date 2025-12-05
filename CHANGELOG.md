@@ -6,34 +6,40 @@ e este projeto adota o [versionamento semântico](https://semver.org/lang/pt-BR/
 
 ---
 
-## [v1.0.0-beta] — 2025-11-01
+## [v2.0.0] — 2025-12-05
 ### Adicionado
-- Implementação completa da **Etapa 1 e Etapa 2** do projeto.
-- Criação da **CLI (`run.py`)** com suporte aos comandos principais:
-  - `compactar <arquivo.txt>` — compactação via **LZW**.
-  - `descompactar <arquivo.lzw>` — descompactação reversa.
-  - `buscar_simples <arquivo.txt> "<substring>"` — busca com **Knuth-Morris-Pratt (KMP)**.
-- Estrutura modular em `src/`:
-  - `compactacao/lzw.py` — algoritmos de compressão e descompressão.
-  - `busca/kmp.py` — algoritmo de busca eficiente.
-  - `util/arquivos.py` e `util/memoria.py` — análise de desempenho, hash e uso de memória.
-- Empacotamento do executável único **`minerva.exe`** com **PyInstaller**.
-- Verificação de integridade dos arquivos via hash SHA-256.
-- Cálculo automático da taxa de compressão.
-- Log de uso de IA (`AI_USAGE_LOG.md`) documentando interações com assistentes generativos.
+- Implementação completa da **Etapa 3**: busca de substring diretamente no arquivo compactado.
+- Novo formato de arquivo `.lzw` com:
+  - compressão por blocos;
+  - índice contendo offsets originais e compactados;
+  - suporte à leitura seletiva dos blocos.
+- Algoritmo de busca adaptado para operar em dados descompactados por streaming, preservando offsets corretos.
+- Ajustes na CLI para suportar:
+  - `buscar_compactado <arquivo.lzw> "<substring>"`.
+- Atualização do executável `run.exe` com todos os recursos das três etapas.
 
 ### Alterado
-- Refatoração da CLI (`cli.py`) para melhor tratamento de erros e mensagens de status.
-- Organização dos diretórios em `src/` e `data/` (entrada, compactados e descompactados).
+- Refatoração do módulo `compactacao/lzw.py` para suportar compressão e descompressão em blocos indexados.
+- Atualização do README e demais documentações para incluir a Etapa 3.
 
-### Conhecido / Próximos passos
-- Início do planejamento da **Etapa 3** — implementação de busca binária otimizada e indexação.
-- Portabilidade testada no **Windows**; compatibilidade com **Linux/macOS** será adicionada na próxima versão.
+---
+
+## [v1.0.0] — 2025-11-01
+### Adicionado
+- Implementação da **Etapa 1 (LZW)** e **Etapa 2 (busca simples com KMP)**.
+- Criação da CLI com suporte aos comandos:
+  - `compactar <arquivo.txt>`
+  - `descompactar <arquivo.lzw>`
+  - `buscar_simples <arquivo.txt> "<substring>"`
+- Estrutura modular do projeto (`src/compactacao`, `src/busca`, `src/util`).
+- Empacotamento inicial como executável Windows via PyInstaller.
+- Verificação de integridade por hash SHA-256 e relatório de taxa de compressão.
 
 ---
 
 ## Histórico
 - **2025-11-01** — Publicação da primeira release (`v1.0.0`).
+- **2025-12-05** — Release da versão completa com suporte às 3 etapas (`v2.0.0`).
 
 ---
 
